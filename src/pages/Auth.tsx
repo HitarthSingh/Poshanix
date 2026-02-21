@@ -87,16 +87,27 @@ function Auth() {
     if (!email) { setError('Enter your email address first.'); return }
     setError('')
     setLoading(true)
-    const { error } = await supabase.auth.signInWithOtp({
+    const { data, error } = await supabase.auth.signInWithOtp({
       email,
       options: {
         shouldCreateUser: true,
         emailRedirectTo: `${window.location.origin}/home`,
       },
     })
+    console.log('signInWithOtp result:', { data, error })
     setLoading(false)
-    if (error) setError(error.message)
-    else setMagicLinkSent(true)
+    if (error) {
+      const msg = error.message || JSON.stringify(error)
+      // Provide actionable guidance for common server-side failure (SMTP / redirect misconfig)
+      if (msg.toLowerCase().includes('error sending magic link')) {
+        setError(
+          'Failed to send magic link — check your Supabase project SMTP (Auth → Settings → SMTP),\n' +
+          'and ensure your Redirect URLs / Site URL include this origin. Server: ' + msg
+        )
+      } else {
+        setError(msg)
+      }
+    } else setMagicLinkSent(true)
   }
 
   /* ---- OAuth ---- */
@@ -249,12 +260,19 @@ function Auth() {
             <>
               <div className="divider"><span>or</span></div>
               {magicLinkSent ? (
-                <div className="auth-success magic-sent">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                    <polyline points="22,6 12,13 2,6"/>
-                  </svg>
-                  Magic link sent to <strong>{email}</strong>. Check your inbox.
+                <div className="auth-success magic-sent" role="status" aria-live="polite">
+                  <div className="message-row">
+                    <div className="checkmark" aria-hidden>
+                      <svg viewBox="0 0 52 52">
+                        <circle className="checkmark-circle" cx="26" cy="26" r="20" />
+                        <path className="checkmark-check" d="M16 26l7 7 13-13" />
+                      </svg>
+                    </div>
+                    <div>
+                      <div>Magic link sent to <strong>{email}</strong>.</div>
+                      <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Check your inbox.</div>
+                    </div>
+                  </div>
                   <button className="resend-magic-btn" onClick={() => setMagicLinkSent(false)}>Resend</button>
                 </div>
               ) : (
@@ -288,11 +306,6 @@ function Auth() {
         </div>
       </main>
 
-      <footer className="auth-page-footer">
-        <span onClick={() => navigate('/privacy')} className="auth-legal-link">Privacy Policy</span>
-        <span className="auth-legal-dot">·</span>
-        <span onClick={() => navigate('/terms')} className="auth-legal-link">Terms of Service</span>
-      </footer>
     </div>
   )
 }

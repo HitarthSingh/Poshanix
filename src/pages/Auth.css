@@ -283,30 +283,6 @@
   border-color: var(--border);
 }
 
-/* Auth page footer */
-.auth-page-footer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 1.25rem;
-  font-size: 0.8rem;
-  color: var(--text-footer);
-  border-top: 1px solid var(--border-nav);
-}
-
-.auth-legal-link {
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: color 0.15s;
-}
-.auth-legal-link:hover {
-  color: var(--accent);
-}
-
-.auth-legal-dot {
-  color: var(--text-footer);
-}
 
 /* Magic link button */
 .magic-link-btn {
@@ -359,4 +335,48 @@
 }
 .resend-magic-btn:hover {
   text-decoration: underline;
+}
+
+/* Animated checkmark for magic link confirmation */
+.checkmark {
+  width: 48px;
+  height: 48px;
+  display: inline-block;
+}
+.checkmark svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.checkmark-circle {
+  stroke: var(--accent);
+  stroke-width: 2.5;
+  fill: none;
+  stroke-dasharray: 140;
+  stroke-dashoffset: 140;
+  animation: drawCircle 0.5s ease forwards;
+}
+.checkmark-check {
+  stroke: var(--accent-on);
+  stroke-width: 3.2;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 36;
+  stroke-dashoffset: 36;
+  opacity: 0;
+  animation: drawCheck 0.35s 0.5s ease forwards;
+}
+
+@keyframes drawCircle {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes drawCheck {
+  to { stroke-dashoffset: 0; opacity: 1; }
+}
+
+.magic-sent .message-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
 }
