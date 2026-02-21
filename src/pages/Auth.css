@@ -1,0 +1,314 @@
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #0d0d0d;
+  color: #f0f0f0;
+  font-family: system-ui, sans-serif;
+}
+
+/* Container */
+.auth-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+}
+
+/* Card */
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  background: #151515;
+  border: 1px solid #222;
+  border-radius: 16px;
+  padding: 2.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+/* Tab bar */
+.tab-bar {
+  display: flex;
+  background: #111;
+  border-radius: 10px;
+  padding: 4px;
+  gap: 4px;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 0.55rem 0;
+  font-size: 0.88rem;
+  font-weight: 600;
+  font-family: inherit;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #666;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.tab-btn:hover {
+  color: #aaa;
+}
+
+.tab-active {
+  background: #1e1e1e;
+  color: #f0f0f0;
+}
+
+.auth-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.auth-subtitle {
+  margin: 0;
+  color: #777;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* Error / Success */
+.auth-error {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #f87171;
+  border-radius: 8px;
+  padding: 0.6rem 0.85rem;
+  font-size: 0.82rem;
+  text-align: center;
+}
+
+.auth-success {
+  background: rgba(74, 222, 128, 0.12);
+  border: 1px solid rgba(74, 222, 128, 0.3);
+  color: #4ade80;
+  border-radius: 8px;
+  padding: 0.6rem 0.85rem;
+  font-size: 0.82rem;
+  text-align: center;
+}
+
+/* OAuth buttons */
+.oauth-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.oauth-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.7rem 1rem;
+  font-size: 0.92rem;
+  font-weight: 500;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  font-family: inherit;
+}
+
+.google-btn {
+  background: #1a1a1a;
+  color: #f0f0f0;
+}
+.google-btn:hover {
+  background: #222;
+  border-color: #444;
+}
+
+.github-btn {
+  background: #1a1a1a;
+  color: #f0f0f0;
+}
+.github-btn:hover {
+  background: #222;
+  border-color: #444;
+}
+
+/* Divider */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #555;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #2a2a2a;
+}
+
+/* Email form */
+.email-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.auth-input {
+  width: 100%;
+  padding: 0.72rem 0.9rem;
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: #f0f0f0;
+  background: #111;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+.auth-input::placeholder {
+  color: #555;
+}
+.auth-input:focus {
+  border-color: #4ade80;
+}
+
+.primary-btn {
+  width: 100%;
+  padding: 0.72rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: inherit;
+  border: none;
+  border-radius: 10px;
+  background: #4ade80;
+  color: #0d0d0d;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+.primary-btn:hover:not(:disabled) {
+  background: #22c55e;
+  transform: translateY(-1px);
+}
+.primary-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Phone group */
+.phone-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.phone-btn {
+  width: 100%;
+  padding: 0.72rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: inherit;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  background: #1a1a1a;
+  color: #f0f0f0;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+.phone-btn:hover:not(:disabled) {
+  background: #222;
+  border-color: #444;
+}
+.phone-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.otp-info {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #888;
+  text-align: center;
+}
+.otp-info strong {
+  color: #ccc;
+}
+
+.resend-btn {
+  background: none;
+  border: none;
+  color: #4ade80;
+  font-size: 0.82rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  font-family: inherit;
+  text-align: center;
+}
+.resend-btn:hover {
+  text-decoration: underline;
+}
+
+/* Password strength bar */
+.password-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.strength-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.strength-segments {
+  display: flex;
+  flex: 1;
+  gap: 4px;
+}
+
+.strength-seg {
+  flex: 1;
+  height: 4px;
+  border-radius: 99px;
+  transition: background 0.3s;
+}
+
+.strength-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  min-width: 44px;
+  text-align: right;
+  transition: color 0.3s;
+}
+
+/* Footer link */
+.auth-footer-text {
+  margin: 0;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: #4ade80;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+}
+.link-btn:hover {
+  text-decoration: underline;
+}

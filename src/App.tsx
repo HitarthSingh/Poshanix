@@ -1,6 +1,10 @@
+import { Routes, Route, useNavigate } from 'react-router-dom'
+import Auth from './pages/Auth'
 import './App.css'
 
-function App() {
+function Landing() {
+  const navigate = useNavigate()
+
   return (
     <div className="page">
       <nav className="nav">
@@ -17,13 +21,24 @@ function App() {
           Instantly decode the nutrition in any food — just snap a photo
           and let AI do the rest.
         </p>
-        <button className="cta-btn">Get Started</button>
+        <button className="cta-btn" onClick={() => navigate('/auth')}>
+          Get Started
+        </button>
       </main>
 
       <footer className="footer">
         &copy; {new Date().getFullYear()} Poshanix
       </footer>
     </div>
+  )
+}
+
+function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<Landing />} />
+      <Route path="/auth" element={<Auth />} />
+    </Routes>
   )
 }
 
