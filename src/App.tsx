@@ -1,14 +1,21 @@
 import { Routes, Route, useNavigate } from 'react-router-dom'
 import Auth from './pages/Auth'
+import Home from './pages/Home'
+import Privacy from './legal/Privacy'
+import Terms from './legal/Terms'
+import { useTheme } from './lib/useTheme'
+import ThemeSwitch from './components/Switch'
 import './App.css'
 
 function Landing() {
   const navigate = useNavigate()
+  const [theme, toggleTheme] = useTheme()
 
   return (
     <div className="page">
       <nav className="nav">
         <span className="nav-logo">&#x1F33F; Poshanix</span>
+        <ThemeSwitch checked={theme === 'dark'} onToggle={toggleTheme} />
       </nav>
 
       <main className="hero">
@@ -26,8 +33,12 @@ function Landing() {
         </button>
       </main>
 
-      <footer className="footer">
-        &copy; {new Date().getFullYear()} Poshanix
+      <footer className="footer landing-footer">
+        <span>&copy; {new Date().getFullYear()} Poshanix</span>
+        <span className="footer-dot">·</span>
+        <span className="footer-link" onClick={() => navigate('/privacy')}>Privacy Policy</span>
+        <span className="footer-dot">·</span>
+        <span className="footer-link" onClick={() => navigate('/terms')}>Terms of Service</span>
       </footer>
     </div>
   )
@@ -38,6 +49,9 @@ function App() {
     <Routes>
       <Route path="/" element={<Landing />} />
       <Route path="/auth" element={<Auth />} />
+      <Route path="/home" element={<Home />} />
+      <Route path="/privacy" element={<Privacy />} />
+      <Route path="/terms" element={<Terms />} />
     </Routes>
   )
 }

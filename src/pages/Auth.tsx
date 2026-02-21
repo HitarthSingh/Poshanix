@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useNavigate } from 'react-router-dom'
+import { useTheme } from '../lib/useTheme'
+import ThemeSwitch from '../components/Switch'
 import './Auth.css'
 
 type Tab = 'signin' | 'signup'
@@ -23,19 +25,18 @@ function getStrength(pw: string): { score: number; label: string; color: string 
 
 function Auth() {
   const navigate = useNavigate()
+  const [theme, toggleTheme] = useTheme()
   const [tab, setTab] = useState<Tab>('signin')
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [fullName, setFullName] = useState('')
-  const [phone, setPhone] = useState('')
-  const [otp, setOtp] = useState('')
-  const [otpSent, setOtpSent] = useState(false)
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
+  const [magicLinkSent, setMagicLinkSent] = useState(false)
 
   const resetState = (newTab: Tab) => {
     setTab(newTab)
@@ -43,9 +44,7 @@ function Auth() {
     setMessage('')
     setPassword('')
     setConfirmPassword('')
-    setPhone('')
-    setOtp('')
-    setOtpSent(false)
+    setMagicLinkSent(false)
   }
 
   const strength = getStrength(password)
@@ -59,7 +58,7 @@ function Auth() {
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     setLoading(false)
     if (error) setError(error.message)
-    else navigate('/')
+    else navigate('/home')
   }
 
   /* ---- Sign Up ---- */
@@ -75,8 +74,7 @@ function Auth() {
       email,
       password,
       options: {
-        data: { full_name: fullName },
-        emailRedirectTo: window.location.origin,
+        emailRedirectTo: "http://localhost:5173",
       },
     })
     setLoading(false)
@@ -84,43 +82,46 @@ function Auth() {
     else setMessage('Check your email for a confirmation link!')
   }
 
-  /* ---- OAuth (sign in only) ---- */
+  /* ---- Magic Link ---- */
+  const handleMagicLink = async () => {
+    if (!email) { setError('Enter your email address first.'); return }
+    setError('')
+    setLoading(true)
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        shouldCreateUser: true,
+        emailRedirectTo: `${window.location.origin}/home`,
+      },
+    })
+    setLoading(false)
+    if (error) setError(error.message)
+    else setMagicLinkSent(true)
+  }
+
+  /* ---- OAuth ---- */
   const handleOAuth = async (provider: 'google' | 'github') => {
     setError('')
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
-      options: { redirectTo: window.location.origin },
+      options: { redirectTo: `${window.location.origin}/home` },
     })
     if (error) setError(error.message)
-  }
-
-  /* ---- Phone OTP (sign in only) ---- */
-  const handleSendOtp = async () => {
-    if (!phone.trim()) return
-    setError('')
-    setLoading(true)
-    const { error } = await supabase.auth.signInWithOtp({ phone })
-    setLoading(false)
-    if (error) setError(error.message)
-    else setOtpSent(true)
-  }
-
-  const handleVerifyOtp = async () => {
-    if (!otp.trim()) return
-    setError('')
-    setLoading(true)
-    const { error } = await supabase.auth.verifyOtp({ phone, token: otp, type: 'sms' })
-    setLoading(false)
-    if (error) setError(error.message)
-    else navigate('/')
   }
 
   return (
     <div className="auth-page">
       <nav className="nav">
+        <button className="back-btn" onClick={() => navigate('/')}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+          Back
+        </button>
         <span className="nav-logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
           &#x1F33F; Poshanix
         </span>
+        <ThemeSwitch checked={theme === 'dark'} onToggle={toggleTheme} />
       </nav>
 
       <main className="auth-container">
@@ -153,31 +154,27 @@ function Auth() {
           {error && <div className="auth-error">{error}</div>}
           {message && <div className="auth-success">{message}</div>}
 
-          {/* OAuth + Phone — Sign In only */}
-          {tab === 'signin' && (
-            <>
-              <div className="oauth-group">
-                <button className="oauth-btn google-btn" onClick={() => handleOAuth('google')}>
-                  <svg viewBox="0 0 48 48" width="20" height="20">
-                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-                    <path fill="#FBBC05" d="M10.53 28.59a14.5 14.5 0 0 1 0-9.18l-7.98-6.19a24.0 24.0 0 0 0 0 21.56l7.98-6.19z"/>
-                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-                  </svg>
-                  Continue with Google
-                </button>
+          {/* OAuth — shown on both tabs */}
+          <div className="oauth-group">
+            <button className="oauth-btn google-btn" onClick={() => handleOAuth('google')}>
+              <svg viewBox="0 0 48 48" width="20" height="20">
+                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                <path fill="#FBBC05" d="M10.53 28.59a14.5 14.5 0 0 1 0-9.18l-7.98-6.19a24.0 24.0 0 0 0 0 21.56l7.98-6.19z"/>
+                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+              </svg>
+              Continue with Google
+            </button>
 
-                <button className="oauth-btn github-btn" onClick={() => handleOAuth('github')}>
-                  <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
-                  </svg>
-                  Continue with GitHub
-                </button>
-              </div>
+            <button className="oauth-btn github-btn" onClick={() => handleOAuth('github')}>
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
+            </svg>
+              Continue with GitHub
+            </button>
+          </div>
 
-              <div className="divider"><span>or continue with email</span></div>
-            </>
-          )}
+          <div className="divider"><span>or continue with email</span></div>
 
           {/* Email form */}
           <form className="email-form" onSubmit={tab === 'signin' ? handleSignIn : handleSignUp}>
@@ -216,7 +213,7 @@ function Auth() {
                         key={i}
                         className="strength-seg"
                         style={{
-                          background: i <= strength.score ? strength.color : '#2a2a2a',
+                          background: i <= strength.score ? strength.color : (theme === 'dark' ? '#2a2a2a' : '#d4d4d8'),
                         }}
                       />
                     ))}
@@ -247,44 +244,33 @@ function Auth() {
             </button>
           </form>
 
-          {/* Phone OTP — Sign In only */}
+          {/* Magic Link — Sign In only */}
           {tab === 'signin' && (
             <>
-              <div className="divider"><span>or use phone</span></div>
-              <div className="phone-group">
-                {!otpSent ? (
-                  <>
-                    <input
-                      className="auth-input"
-                      type="tel"
-                      placeholder="+91 98765 43210"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                    />
-                    <button className="phone-btn" onClick={handleSendOtp} disabled={loading}>
-                      {loading ? 'Sending…' : 'Send OTP'}
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <p className="otp-info">OTP sent to <strong>{phone}</strong></p>
-                    <input
-                      className="auth-input"
-                      type="text"
-                      placeholder="Enter 6-digit OTP"
-                      value={otp}
-                      onChange={(e) => setOtp(e.target.value)}
-                      maxLength={6}
-                    />
-                    <button className="phone-btn" onClick={handleVerifyOtp} disabled={loading}>
-                      {loading ? 'Verifying…' : 'Verify & Sign In'}
-                    </button>
-                    <button className="resend-btn" onClick={() => { setOtpSent(false); setOtp('') }}>
-                      ← Change number
-                    </button>
-                  </>
-                )}
-              </div>
+              <div className="divider"><span>or</span></div>
+              {magicLinkSent ? (
+                <div className="auth-success magic-sent">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                    <polyline points="22,6 12,13 2,6"/>
+                  </svg>
+                  Magic link sent to <strong>{email}</strong>. Check your inbox.
+                  <button className="resend-magic-btn" onClick={() => setMagicLinkSent(false)}>Resend</button>
+                </div>
+              ) : (
+                <button
+                  className="magic-link-btn"
+                  type="button"
+                  onClick={handleMagicLink}
+                  disabled={loading}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                    <polyline points="22,6 12,13 2,6"/>
+                  </svg>
+                  {loading ? 'Sending…' : 'Send magic link'}
+                </button>
+              )}
             </>
           )}
 
@@ -301,6 +287,12 @@ function Auth() {
           </p>
         </div>
       </main>
+
+      <footer className="auth-page-footer">
+        <span onClick={() => navigate('/privacy')} className="auth-legal-link">Privacy Policy</span>
+        <span className="auth-legal-dot">·</span>
+        <span onClick={() => navigate('/terms')} className="auth-legal-link">Terms of Service</span>
+      </footer>
     </div>
   )
 }
