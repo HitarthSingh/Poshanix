@@ -96,14 +96,6 @@ function Home() {
           </div>
         </div>
       </main>
-
-      <footer className="footer landing-footer">
-        <span>&copy; {new Date().getFullYear()} Poshanix</span>
-        <span className="footer-dot">·</span>
-        <span className="footer-link" onClick={() => navigate('/privacy')}>Privacy Policy</span>
-        <span className="footer-dot">·</span>
-        <span className="footer-link" onClick={() => navigate('/terms')}>Terms of Service</span>
-      </footer>
     </div>
   )
 }
