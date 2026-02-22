@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, type FormEvent } from 'react'
 import { supabase } from '../lib/supabase'
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../lib/useTheme'
@@ -50,7 +50,7 @@ function Auth() {
   const strength = getStrength(password)
 
   /* ---- Sign In ---- */
-  const handleSignIn = async (e: React.FormEvent) => {
+  const handleSignIn = async (e: FormEvent) => {
     e.preventDefault()
     if (!email || !password) return
     setError('')
@@ -62,7 +62,7 @@ function Auth() {
   }
 
   /* ---- Sign Up ---- */
-  const handleSignUp = async (e: React.FormEvent) => {
+  const handleSignUp = async (e: FormEvent) => {
     e.preventDefault()
     if (!email || !password) return
     if (password !== confirmPassword) { setError('Passwords do not match.'); return }
