@@ -69,9 +69,9 @@ function Home() {
     setShowScanner(false)
     setImageSrc(null)
     setOcrText('')
-    setAiResponse('')
-    navigate('/food', { state: { parsed } })
-  }, [ocrText, ocrLoading, ocrSentToAi])
+    // pass any existing aiResponse along so Food page can display AI insight immediately
+    navigate('/food', { state: { parsed, ai_insight: aiResponse } })
+  }, [ocrText, ocrLoading, ocrSentToAi, aiResponse])
 
   const handleSignOut = async () => {
     await supabase.auth.signOut()
@@ -115,7 +115,7 @@ function Home() {
         <div className="home-welcome">
           {/* <div className="badge">Dashboard</div> */}
           <h1 className="home-title">
-            Hello, <span className="accent">{displayName}</span> 👋
+            Hello, <span className="accent">{displayName}</span> <span className="wave">👋</span>
           </h1>
           <p className="home-sub">
             Your AI-powered nutrition companion is ready. Choose a feature below to get started.
@@ -127,7 +127,14 @@ function Home() {
           <div className="health-metrics-grid">
             {healthMetrics.bmi !== null && (
               <div className="metric-card-home">
-                <div className="metric-icon-home">📊</div>
+                <div className="metric-icon-home">
+                  <img
+                    src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Bar%20Chart.png"
+                    alt="Bar Chart"
+                    width={45}
+                    height={45}
+                  />
+                </div>
                 <div className="metric-info-home">
                   <div className="metric-label-home">BMI</div>
                   <div className="metric-value-home">{healthMetrics.bmi}</div>
@@ -141,7 +148,14 @@ function Home() {
             )}
             {healthMetrics.bmr !== null && (
               <div className="metric-card-home">
-                <div className="metric-icon-home">🔥</div>
+                <div className="metric-icon-home">
+                  <img
+                    src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Travel%20and%20places/Fire.png"
+                    alt="Fire"
+                    width={45}
+                    height={45}
+                  />
+                </div>
                 <div className="metric-info-home">
                   <div className="metric-label-home">BMR</div>
                   <div className="metric-value-home">{healthMetrics.bmr}</div>
@@ -154,21 +168,21 @@ function Home() {
 
         <div className="feature-grid">
           <div className="feature-card feature-highlight" onClick={() => setShowScanner(true)} style={{ cursor: 'pointer' }}>
-            <div className="feature-icon">📸</div>
+            <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Camera%20with%20Flash.png" alt="Camera with Flash" width="50" height="50" />
             <h3>Scan Food</h3>
             <p>Snap a photo and instantly get full nutrition insights powered by AI.</p>
             <span className="action-hint">Click to scan</span>
           </div>
 
           <div className="feature-card">
-            <div className="feature-icon">📊</div>
+            <div className="feature-icon"></div>
             <h3>Nutrition Log</h3>
             <p>Track your daily intake and monitor macro goals over time.</p>
             <span className="coming-soon-badge">Coming Soon</span>
           </div>
 
           <div className="feature-card">
-            <div className="feature-icon">🎯</div>
+            <div className="feature-icon"></div>
             <h3>Goals</h3>
             <p>Set personalized calorie and macro targets tailored to you.</p>
             <span className="coming-soon-badge">Coming Soon</span>

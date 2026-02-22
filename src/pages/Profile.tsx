@@ -254,7 +254,7 @@ function Profile() {
             <div className="health-metrics">
               {form.bmi !== null && (
                 <div className="metric-card">
-                  <div className="metric-icon">📊</div>
+                  <div className="metric-icon"></div>
                   <div className="metric-info">
                     <div className="metric-label">BMI</div>
                     <div className="metric-value">{form.bmi}</div>
@@ -268,7 +268,7 @@ function Profile() {
               )}
               {form.bmr !== null && (
                 <div className="metric-card">
-                  <div className="metric-icon">🔥</div>
+                  <div className="metric-icon"></div>
                   <div className="metric-info">
                     <div className="metric-label">BMR</div>
                     <div className="metric-value">{form.bmr}</div>
@@ -326,10 +326,10 @@ function Profile() {
                 <div className="chip-group">
                   <button type="button"
                     className={`chip ${form.gender === 'male' ? 'chip-active' : ''}`}
-                    onClick={() => set('gender', 'male')}>♂️ Male</button>
+                    onClick={() => set('gender', 'male')}> Male</button>
                   <button type="button"
                     className={`chip ${form.gender === 'female' ? 'chip-active' : ''}`}
-                    onClick={() => set('gender', 'female')}>♀️ Female</button>
+                    onClick={() => set('gender', 'female')}> Female</button>
                 </div>
               </div>
               <div className="field-group">
@@ -412,7 +412,7 @@ function Profile() {
           {/* ---- Section: Health ---- */}
           <div className="profile-section">
             <h2 className="section-title">
-              <span>🏥</span> Health
+              <span></span> Health
             </h2>
 
             <label className="field-label"> Food Allergies</label>

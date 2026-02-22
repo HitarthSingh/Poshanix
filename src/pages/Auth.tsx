@@ -84,7 +84,7 @@ function Auth() {
       email,
       password,
       options: {
-        emailRedirectTo: "http://localhost:5173",
+        emailRedirectTo: `${window.location.origin}/home`,
       },
     })
     setLoading(false)
@@ -123,9 +123,11 @@ function Auth() {
   /* ---- OAuth ---- */
   const handleOAuth = async (provider: 'google' | 'github') => {
     setError('')
+    const redirectTo = `${window.location.origin}/home`
+
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
-      options: { redirectTo: `${window.location.origin}/home` },
+      options: { redirectTo },
     })
     if (error) setError(error.message)
   }

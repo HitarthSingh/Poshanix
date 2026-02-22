@@ -11,8 +11,10 @@ export default function Food() {
   const location = useLocation()
   const navigate = useNavigate()
   const initial = (location.state as any)?.parsed || null
+  const initialAiInsight = (location.state as any)?.ai_insight || null
   const [parsed, setParsed] = useState<any>(initial)
   const [loading, setLoading] = useState<boolean>(false)
+  const [aiInsight, setAiInsight] = useState<string | null>(initialAiInsight)
 
   const API_BASE = (import.meta.env.VITE_AI_API_BASE as string) || 'http://localhost:3001'
 
@@ -35,12 +37,21 @@ export default function Food() {
         const contentType = res.headers.get('content-type') || ''
         if (contentType.includes('application/json')) {
           const data = await res.json()
-          if (!cancelled) setParsed(data)
+          if (!cancelled) {
+            setParsed(data)
+            // capture any free-form AI insight text if provided in response
+            if (data && (data.ai_insight || data.ai_text || data.advice_text || data.assistant_text)) {
+              setAiInsight(data.ai_insight || data.ai_text || data.advice_text || data.assistant_text)
+            }
+          }
         } else {
           const text = await res.text()
           // treat plain text as an advice item
           const next = { ...parsed, medical_nutrition_advice: [ { condition: 'AI', advice: text.trim() } ] }
-          if (!cancelled) setParsed(next)
+          if (!cancelled) {
+            setParsed(next)
+            setAiInsight(text.trim())
+          }
         }
       } catch (e) {
         console.error('Food parse error', e)
@@ -137,6 +148,14 @@ export default function Food() {
               ))}
             </ul>
           ) : (<div>No clinical observations provided.</div>)}
+
+          {/* If an AI insight string is available (from Home or OCR text), show it here */}
+          {aiInsight ? (
+            <div style={{ marginTop: 12, padding: 12, background: 'rgba(0,0,0,0.04)', borderRadius: 8 }}>
+              <strong>AI Insight:</strong>
+              <div style={{ marginTop: 6, whiteSpace: 'pre-wrap' }}>{aiInsight}</div>
+            </div>
+          ) : null}
         </section>
 
         <div style={{ marginTop: 24 }}>
