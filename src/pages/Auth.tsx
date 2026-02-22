@@ -55,10 +55,20 @@ function Auth() {
     if (!email || !password) return
     setError('')
     setLoading(true)
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    const { error, data } = await supabase.auth.signInWithPassword({ email, password })
     setLoading(false)
-    if (error) setError(error.message)
-    else navigate('/home')
+    if (error) { setError(error.message); return }
+    // Check onboarding status
+    const userId = data.user?.id
+    if (userId) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('onboarding_completed')
+        .eq('id', userId)
+        .single()
+      if (!profile?.onboarding_completed) { navigate('/onboarding'); return }
+    }
+    navigate('/home')
   }
 
   /* ---- Sign Up ---- */
