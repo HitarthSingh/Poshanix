@@ -282,7 +282,7 @@ function Profile() {
           {/* ---- Section: Basic Info ---- */}
           <div className="profile-section">
             <h2 className="section-title">
-              <span>👤</span> Basic Info
+              <span>d</span> Basic Info
             </h2>
 
             {/* Name — prominent first field, full width */}

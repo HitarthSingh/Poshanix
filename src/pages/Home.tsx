@@ -52,7 +52,7 @@ function Home() {
     return () => listener.subscription.unsubscribe()
   }, [navigate])
 
-  const API_BASE = (import.meta.env.VITE_AI_API_BASE as string) || 'http://localhost:3001'
+  const API_BASE = (import.meta.env.VITE_AI_API_BASE as string) || 'https://poshanix.onrender.com'
 
   // when OCR text appears, send it to the AI endpoint once
   useEffect(() => {

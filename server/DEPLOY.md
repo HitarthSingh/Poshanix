@@ -39,4 +39,24 @@ docker run --env-file .env -p 3001:3001 poshanix-server
 - Add the deployed server URL to your frontend `VITE_AI_API_BASE`.
 - Update OAuth / Supabase redirect URIs to point at your deployed frontend origin and (if used) any redirect helper endpoints.
 
+If your Render service is reachable at `https://poshanix.onrender.com`:
+- Set your frontend `VITE_AI_API_BASE` (at build time or in your frontend host) to `https://poshanix.onrender.com` so the app will call the correct AI proxy.
+- On Render, ensure the service is reachable (Render will expose the service on the assigned public domain). The server already listens on `process.env.PORT || 3001`, which Render sets automatically.
+- CORS: the server currently uses permissive CORS (`cors()`), so the frontend origin will be allowed. If you prefer to restrict origins, configure CORS in `server/index.js` to only allow `https://poshanix.onrender.com`.
+
+Example: set the frontend env or build-time var when building the frontend (Vite) so the production build contains the correct API base:
+
+```bash
+# from repo root (before running `npm run build` for frontend)
+export VITE_AI_API_BASE=https://poshanix.onrender.com
+npm run build
+```
+
+On Windows (PowerShell):
+
+```powershell
+$env:VITE_AI_API_BASE = 'https://poshanix.onrender.com'
+npm run build
+```
+
 If you want, I can add a GitHub Actions workflow to build and push the Docker image automatically—tell me which container registry (Docker Hub / GHCR / GCP) you'd like.

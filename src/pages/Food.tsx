@@ -16,7 +16,7 @@ export default function Food() {
   const [loading, setLoading] = useState<boolean>(false)
   const [aiInsight, setAiInsight] = useState<string | null>(initialAiInsight)
 
-  const API_BASE = (import.meta.env.VITE_AI_API_BASE as string) || 'http://localhost:3001'
+  const API_BASE = (import.meta.env.VITE_AI_API_BASE as string) || 'https://poshanix.onrender.com'
 
   useEffect(() => {
     // If we have only OCR cleaned_text and no nutrition_facts, request parsing from backend
