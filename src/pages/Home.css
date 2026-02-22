@@ -207,6 +207,113 @@
   width: fit-content;
 }
 
+.feature-card .action-hint {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+/* Scanner modal */
+.scanner-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 60;
+}
+.scanner-modal {
+  width: 92%;
+  max-width: 860px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+  position: relative;
+}
+.scanner-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.6rem;
+}
+.scanner-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+.scanner-controls {
+  display:flex;
+  gap:0.6rem;
+  align-items:center;
+}
+.ocr-preview {
+  max-width: 240px;
+  max-height: 240px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+}
+.scanner-result {
+  display:flex;
+  gap:0.8rem;
+  align-items:flex-start;
+}
+.ocr-output { flex: 1; min-width: 0; }
+.ocr-output textarea { min-width: 0; }
+
+/* Loader overlay shown while OCR is running */
+.scanner-loading-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.45);
+  z-index: 30;
+  border-radius: 8px;
+  pointer-events: auto;
+}
+
+.camera-preview {
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  align-items:center;
+}
+.camera-preview video {
+  width: 320px;
+  max-width: 40vw;
+  height: auto;
+  border-radius: 8px;
+  background: #000;
+  border: 1px solid var(--border-subtle);
+}
+.ocr-output textarea {
+  width: 100%;
+  min-height: 160px;
+  resize: vertical;
+  padding: 0.6rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+  color: var(--text);
+  font-family: inherit;
+}
+.progress-bar {
+  height: 6px;
+  background: var(--bg-elevated);
+  border-radius: 99px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--accent);
+  width: 0%;
+  transition: width 0.12s linear;
+}
+
 /* Responsive tweaks */
 @media (max-width: 480px) {
   .home-nav {
@@ -215,4 +322,10 @@
   .user-display-name {
     display: none;
   }
+  .scanner-result { flex-direction: column; }
+}
+
+/* Ensure scanner result behaves well on medium screens too */
+@media (max-width: 680px) {
+  .scanner-result { flex-direction: column; }
 }
