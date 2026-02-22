@@ -1,6 +1,9 @@
 import { Routes, Route, useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
 import Auth from './pages/Auth'
 import Home from './pages/Home'
+import Food from './pages/Food'
+import Profile from './pages/Profile'
 import Privacy from './legal/Privacy'
 import Terms from './legal/Terms'
 import { useTheme } from './lib/useTheme'
@@ -45,11 +48,17 @@ function Landing() {
 }
 
 function App() {
+  useEffect(() => {
+    try { document.body.classList.add('app-mounted') } catch (e) { /* ignore */ }
+    return () => { try { document.body.classList.remove('app-mounted') } catch (e) { /* ignore */ } }
+  }, [])
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
       <Route path="/auth" element={<Auth />} />
       <Route path="/home" element={<Home />} />
+        <Route path="/food" element={<Food />} />
+      <Route path="/profile" element={<Profile />} />
       <Route path="/privacy" element={<Privacy />} />
       <Route path="/terms" element={<Terms />} />
     </Routes>

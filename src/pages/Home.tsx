@@ -4,6 +4,8 @@ import { supabase } from '../lib/supabase'
 import { useTheme } from '../lib/useTheme'
 import ThemeSwitch from '../components/Switch'
 import Loader from '../components/loader'
+import LoaderOcr from '../components/loader-ocr'
+import ChatWidget from '../components/ChatWidget'
 import './Home.css'
 import { createWorker } from 'tesseract.js'
 
@@ -12,19 +14,35 @@ function Home() {
   const [theme, toggleTheme] = useTheme()
   const [user, setUser] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const [healthMetrics, setHealthMetrics] = useState<{ bmi: number | null; bmr: number | null }>({ bmi: null, bmr: null })
   const [showScanner, setShowScanner] = useState(false)
   const [imageSrc, setImageSrc] = useState<string | null>(null)
   const [ocrText, setOcrText] = useState('')
   const [ocrLoading, setOcrLoading] = useState(false)
   const [ocrProgress, setOcrProgress] = useState(0)
+  const [aiResponse, setAiResponse] = useState('')
+  const [ocrSentToAi, setOcrSentToAi] = useState(false)
   const [cameraActive, setCameraActive] = useState(false)
   const [cameraStream, setCameraStream] = useState<MediaStream | null>(null)
   const videoRef = useRef<HTMLVideoElement | null>(null)
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (!data.user) navigate('/auth')
-      else { setUser(data.user); setLoading(false) }
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) { navigate('/auth'); return }
+      setUser(data.user)
+      
+      // Load health metrics from profile
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('bmi, bmr')
+        .eq('id', data.user.id)
+        .single()
+      
+      if (profile) {
+        setHealthMetrics({ bmi: profile.bmi, bmr: profile.bmr })
+      }
+      
+      setLoading(false)
     })
 
     const { data: listener } = supabase.auth.onAuthStateChange((_, session) => {
@@ -34,6 +52,27 @@ function Home() {
     return () => listener.subscription.unsubscribe()
   }, [navigate])
 
+  const API_BASE = (import.meta.env.VITE_AI_API_BASE as string) || 'http://localhost:3001'
+
+  // when OCR text appears, send it to the AI endpoint once
+  useEffect(() => {
+    if (!ocrText || ocrLoading) return
+    if (ocrSentToAi) return
+    // Navigate immediately to the Food page with the raw OCR text; Food page will request AI parsing
+    setOcrSentToAi(true)
+    const parsed = {
+      cleaned_text: ocrText,
+      nutrition_facts: {},
+      ingredients: null,
+      medical_nutrition_advice: []
+    }
+    setShowScanner(false)
+    setImageSrc(null)
+    setOcrText('')
+    setAiResponse('')
+    navigate('/food', { state: { parsed } })
+  }, [ocrText, ocrLoading, ocrSentToAi])
+
   const handleSignOut = async () => {
     await supabase.auth.signOut()
     navigate('/auth')
@@ -41,8 +80,8 @@ function Home() {
 
   if (loading) {
     return (
-      <div className="home-loader">
-        <div className="spinner" />
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Loader />
       </div>
     )
   }
@@ -61,7 +100,7 @@ function Home() {
         </span>
         <div className="home-nav-right">
           <ThemeSwitch checked={theme === 'dark'} onToggle={toggleTheme} />
-          <div className="avatar-wrap">
+          <div className="avatar-wrap" onClick={() => navigate('/profile')} style={{ cursor: 'pointer' }} title="Edit profile">
             {avatar
               ? <img src={avatar} className="user-avatar" alt="avatar" />
               : <div className="avatar-initials">{initials}</div>}
@@ -74,7 +113,7 @@ function Home() {
       {/* Main */}
       <main className="home-main">
         <div className="home-welcome">
-          <div className="badge">Dashboard</div>
+          {/* <div className="badge">Dashboard</div> */}
           <h1 className="home-title">
             Hello, <span className="accent">{displayName}</span> 👋
           </h1>
@@ -82,6 +121,36 @@ function Home() {
             Your AI-powered nutrition companion is ready. Choose a feature below to get started.
           </p>
         </div>
+
+        {/* Health Metrics */}
+        {(healthMetrics.bmi !== null || healthMetrics.bmr !== null) && (
+          <div className="health-metrics-grid">
+            {healthMetrics.bmi !== null && (
+              <div className="metric-card-home">
+                <div className="metric-icon-home">📊</div>
+                <div className="metric-info-home">
+                  <div className="metric-label-home">BMI</div>
+                  <div className="metric-value-home">{healthMetrics.bmi}</div>
+                  <div className="metric-category-home">
+                    {healthMetrics.bmi < 18.5 ? 'Underweight' : 
+                     healthMetrics.bmi < 25 ? 'Normal' : 
+                     healthMetrics.bmi < 30 ? 'Overweight' : 'Obese'}
+                  </div>
+                </div>
+              </div>
+            )}
+            {healthMetrics.bmr !== null && (
+              <div className="metric-card-home">
+                <div className="metric-icon-home">🔥</div>
+                <div className="metric-info-home">
+                  <div className="metric-label-home">BMR</div>
+                  <div className="metric-value-home">{healthMetrics.bmr}</div>
+                  <div className="metric-category-home">kcal/day</div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="feature-grid">
           <div className="feature-card feature-highlight" onClick={() => setShowScanner(true)} style={{ cursor: 'pointer' }}>
@@ -112,7 +181,7 @@ function Home() {
           <div className="scanner-modal" onClick={(e) => e.stopPropagation()}>
             <header className="scanner-header">
               <h3>Scan Food (OCR)</h3>
-              <button className="link-btn" onClick={() => { setShowScanner(false); setImageSrc(null); setOcrText(''); setOcrProgress(0); }}>Close</button>
+              <button className="link-btn" onClick={() => { setShowScanner(false); setImageSrc(null); setOcrText(''); setOcrSentToAi(false); setOcrProgress(0); }}>Close</button>
             </header>
 
             <div className="scanner-body">
@@ -123,6 +192,7 @@ function Home() {
                   const url = URL.createObjectURL(file)
                   setImageSrc(url)
                   setOcrText('')
+                    setOcrSentToAi(false)
                   // run OCR using the File object (more reliable than passing the object URL)
                   setOcrLoading(true)
                   setOcrProgress(0)
@@ -159,6 +229,7 @@ function Home() {
                       const url = URL.createObjectURL(file)
                       setImageSrc(url)
                       setOcrText('')
+                        setOcrSentToAi(false)
                       setOcrLoading(true)
                       setOcrProgress(0)
                       const worker = await createWorker()
@@ -202,6 +273,7 @@ function Home() {
                         const url = URL.createObjectURL(file)
                         setImageSrc(url)
                         setOcrText('')
+                          setOcrSentToAi(false)
                         setOcrLoading(true)
                         setOcrProgress(0)
                         const worker = await createWorker()
@@ -229,7 +301,7 @@ function Home() {
                 {imageSrc && <img src={imageSrc} alt="preview" className="ocr-preview" />}
                 {cameraActive && (
                   <div className="camera-preview">
-                    <video ref={videoRef} autoplay playsInline muted />
+                    <video ref={videoRef} autoPlay playsInline muted />
                     <div style={{ marginTop: 8 }}>
                       <button className="primary-btn" onClick={async () => {
                         if (!videoRef.current) return
@@ -246,6 +318,7 @@ function Home() {
                           const url = URL.createObjectURL(file)
                           setImageSrc(url)
                           setOcrText('')
+                            setOcrSentToAi(false)
                           setOcrLoading(true)
                           setOcrProgress(0)
                           // stop camera
@@ -276,13 +349,10 @@ function Home() {
                     </div>
                   </div>
                 )}
-                    <div className="ocr-output">
-                      {ocrLoading && <div className="progress-bar"><div className="progress-fill" style={{ width: `${ocrProgress}%` }} /></div>}
-                      <textarea readOnly value={ocrText} placeholder="OCR result will appear here..." />
-                    </div>
+                    {ocrLoading && <div className="progress-bar"><div className="progress-fill" style={{ width: `${ocrProgress}%` }} /></div>}
                     {ocrLoading && (
                       <div className="scanner-loading-overlay" onClick={(e) => e.stopPropagation()}>
-                        <Loader />
+                        <LoaderOcr />
                       </div>
                     )}
               </div>
@@ -290,6 +360,7 @@ function Home() {
           </div>
         </div>
       )}
+      <ChatWidget />
     </div>
   )
 }

@@ -56,6 +56,13 @@
   border-radius: 50%;
   overflow: hidden;
   flex-shrink: 0;
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.15s;
+}
+
+.avatar-wrap:hover {
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.45);
+  transform: scale(1.06);
 }
 
 .user-avatar {
@@ -106,6 +113,28 @@
   color: #ef4444;
 }
 
+.profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.44rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: inherit;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.profile-btn:hover {
+  background: rgba(74, 222, 128, 0.08);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 /* Main */
 .home-main {
   flex: 1;
@@ -139,6 +168,67 @@
   margin: 0;
   max-width: 520px;
   line-height: 1.65;
+}
+
+/* Health Metrics Grid */
+.health-metrics-grid {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.metric-card-home {
+  flex: 1;
+  min-width: 200px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.4rem 1.6rem;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.metric-card-home:hover {
+  border-color: rgba(74, 222, 128, 0.35);
+  box-shadow: 0 6px 24px rgba(74, 222, 128, 0.18);
+  transform: translateY(-3px);
+}
+
+.metric-icon-home {
+  font-size: 2.4rem;
+  line-height: 1;
+}
+
+.metric-info-home {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.metric-label-home {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+.metric-value-home {
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.metric-category-home {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
 }
 
 /* Feature grid */
