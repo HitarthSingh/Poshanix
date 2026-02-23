@@ -226,5 +226,14 @@ app.post('/api/gemini/chat', async (req, res) => {
   }
 })
 
+// Basic root and health endpoints so the public URL can return a quick status
+app.get('/', (req, res) => {
+  res.status(200).send('Poshanix AI proxy — running')
+})
+
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', service: 'poshanix-ai-proxy' })
+})
+
 const port = process.env.PORT || 3001
 app.listen(port, () => console.log(`AI proxy server listening on http://localhost:${port}`))

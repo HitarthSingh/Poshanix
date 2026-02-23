@@ -55,6 +55,30 @@
   line-height: 1.15;
   margin: 0;
   letter-spacing: -0.02em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero-line { display:inline-flex; align-items:center; gap:0.5rem; }
+.scan-text { display:inline-block; font-weight:700; }
+
+.accent-line { display:block; width:100%; text-align:center; margin-top:6px }
+
+/* Rotating text placed inline with heading */
+.rotating {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+  font-weight: 700;
+  line-height: 1;
+  height: 1em;
+}
+.rotating .text-rotate, .rotating .text-rotate-element {
+  display: inline-block;
+  line-height: 1;
+  vertical-align: middle;
 }
 
 .accent {

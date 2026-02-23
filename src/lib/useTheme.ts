@@ -5,7 +5,7 @@ type Theme = 'dark' | 'light'
 export function useTheme(): [Theme, () => void] {
   const [theme, setTheme] = useState<Theme>(() => {
     const stored = localStorage.getItem('theme') as Theme | null
-    const resolved = stored ?? 'dark'
+    const resolved = stored ?? 'light'
     // Set synchronously to avoid flash
     document.documentElement.setAttribute('data-theme', resolved)
     return resolved

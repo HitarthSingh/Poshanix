@@ -170,6 +170,25 @@
   line-height: 1.65;
 }
 
+.wave {
+  animation-name: wave-animation;
+  animation-duration: 2.5s;
+  animation-iteration-count: infinite;
+  transform-origin: 70% 70%;
+  display: inline-block;
+}
+
+@keyframes wave-animation {
+    0% { transform: rotate( 0.0deg) }
+   10% { transform: rotate(14.0deg) }
+   20% { transform: rotate(-8.0deg) }
+   30% { transform: rotate(14.0deg) }
+   40% { transform: rotate(-4.0deg) }
+   50% { transform: rotate(10.0deg) }
+   60% { transform: rotate( 0.0deg) }
+  100% { transform: rotate( 0.0deg) }
+}
+
 /* Health Metrics Grid */
 .health-metrics-grid {
   display: flex;
@@ -405,17 +424,183 @@
 }
 
 /* Responsive tweaks */
+@media (max-width: 768px) {
+  .home-nav {
+    padding: 0.9rem 1rem;
+  }
+  
+  .home-nav-right {
+    gap: 0.6rem;
+  }
+  
+  .home-main {
+    padding: 2rem 1.25rem 3rem;
+    gap: 2.5rem;
+  }
+  
+  .feature-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .health-metrics-grid {
+    flex-direction: column;
+  }
+  
+  .metric-card-home {
+    min-width: 100%;
+    padding: 1.2rem 1.3rem;
+  }
+  
+  .scanner-modal {
+    padding: 0.9rem;
+  }
+  
+  .scanner-result { 
+    flex-direction: column; 
+  }
+  
+  .camera-preview video {
+    max-width: 80vw;
+  }
+}
+
+@media (max-width: 640px) {
+  .signout-btn {
+    padding: 0.44rem 0.7rem;
+    font-size: 0.8rem;
+  }
+  
+  .user-display-name {
+    max-width: 100px;
+  }
+  
+  .home-title {
+    font-size: clamp(1.5rem, 6vw, 2.2rem);
+  }
+  
+  .home-sub {
+    font-size: 0.92rem;
+  }
+  
+  .metric-value-home {
+    font-size: 1.6rem;
+  }
+  
+  .feature-card {
+    padding: 1.4rem 1.2rem;
+  }
+}
+
 @media (max-width: 480px) {
   .home-nav {
-    padding: 1rem 1.25rem;
+    padding: 0.8rem 0.9rem;
   }
+  
+  .home-nav-right {
+    gap: 0.5rem;
+  }
+  
   .user-display-name {
     display: none;
   }
-  .scanner-result { flex-direction: column; }
+  
+  .signout-btn {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.75rem;
+  }
+  
+  .nav-logo {
+    font-size: 0.95rem;
+  }
+  
+  .home-main {
+    padding: 1.5rem 1rem 2.5rem;
+    gap: 2rem;
+  }
+  
+  .home-welcome {
+    gap: 0.8rem;
+  }
+  
+  .home-title {
+    font-size: clamp(1.4rem, 7vw, 1.8rem);
+  }
+  
+  .home-sub {
+    font-size: 0.88rem;
+  }
+  
+  .metric-card-home {
+    padding: 1rem 1.1rem;
+    gap: 1rem;
+  }
+  
+  .metric-icon-home {
+    font-size: 2rem;
+  }
+  
+  .metric-value-home {
+    font-size: 1.5rem;
+  }
+  
+  .metric-label-home {
+    font-size: 0.7rem;
+  }
+  
+  .feature-card {
+    padding: 1.3rem 1.1rem;
+  }
+  
+  .feature-icon {
+    font-size: 1.7rem;
+  }
+  
+  .feature-card h3 {
+    font-size: 1rem;
+  }
+  
+  .feature-card p {
+    font-size: 0.84rem;
+  }
+  
+  .scanner-modal {
+    width: 96%;
+    padding: 0.8rem;
+  }
+  
+  .camera-preview video {
+    width: 280px;
+    max-width: 85vw;
+  }
 }
 
-/* Ensure scanner result behaves well on medium screens too */
-@media (max-width: 680px) {
-  .scanner-result { flex-direction: column; }
+@media (max-width: 360px) {
+  .home-nav {
+    padding: 0.7rem 0.8rem;
+  }
+  
+  .home-nav-right {
+    gap: 0.4rem;
+  }
+  
+  .avatar-wrap {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .signout-btn {
+    padding: 0.35rem 0.5rem;
+    font-size: 0.7rem;
+  }
+  
+  .home-main {
+    padding: 1.2rem 0.8rem 2rem;
+  }
+  
+  .metric-card-home {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.8rem;
+  }
 }

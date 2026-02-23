@@ -8,6 +8,7 @@ import Privacy from './legal/Privacy'
 import Terms from './legal/Terms'
 import { useTheme } from './lib/useTheme'
 import ThemeSwitch from './components/Switch'
+import RotatingText from './component/RotatingText'
 import './App.css'
 
 function Landing() {
@@ -24,8 +25,11 @@ function Landing() {
       <main className="hero">
         <div className="badge">AI-Powered</div>
         <h1 className="hero-title">
-          Scan. Analyze.<br />
-          <span className="accent">Eat Smarter.</span>
+          <span className="hero-line">
+            <span className="scan-text">Scan</span>
+            <RotatingText texts={["Analyze.", "Interpret.", "Optimize."]} splitBy="words" rotationInterval={2200} staggerDuration={30} mainClassName="rotating" />
+          </span>
+          <span className="accent-line"><span className="accent">Eat Smarter.</span></span>
         </h1>
         <p className="hero-sub">
           Instantly decode the nutrition in any food — just snap a photo

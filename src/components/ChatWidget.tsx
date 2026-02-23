@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import './ChatWidget.css'
 
-const API_BASE = (import.meta.env.VITE_AI_API_BASE as string) || 'http://localhost:3001'
+const API_BASE = (import.meta.env.VITE_AI_API_BASE as string) || 'https://poshanix.onrender.com'
 
 interface UserProfile {
   age?: number
