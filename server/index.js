@@ -55,39 +55,77 @@ RESPONSE STYLE:
 OUTPUT FORMAT: Return STRICT JSON with keys: cleaned_text, nutrition_facts, ingredients, medical_nutrition_advice.
 Any violation of format or rules is considered a failure.`
 
-async function callAI(messages, model = 'gpt-3.5-turbo') {
+async function callAI(messages, model = process.env.GEMINI_MODEL || 'gpt-3.5-turbo') {
+  // Support a primary model plus comma-separated fallback list in env var GEMINI_FALLBACK_MODELS
+  const fallback = (process.env.GEMINI_FALLBACK_MODELS || '').split(',').map(s => s.trim()).filter(Boolean)
+  const models = [model].concat(fallback)
+
   // If configured to use Google Generative Language (Gemini), call that API format
   const useGoogle = GEMINI_API_TYPE === 'google' || GEMINI_ENDPOINT.includes('generativelanguage.googleapis.com')
 
-  if (useGoogle) {
-    // Google Generative Language expects a different JSON shape. We'll post to
-    // models/{model}:generateContent with `contents: [{ parts: [{ text }] }]`.
-    // Use the GEMINI_KEY as the `key` query param (per example) or via header if preferred.
-    const rawModel = process.env.GEMINI_MODEL || 'gemini-2.5-flash'
-    const modelName = rawModel.replace(/^models\//, '')
-    const url = `${process.env.GEMINI_API_ENDPOINT || `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent`}${process.env.GEMINI_API_KEY ? `?key=${process.env.GEMINI_API_KEY}` : ''}`
-
-    const prompt = messages.map(m => (m.content || '')).join('\n')
-    const body = { contents: [{ parts: [{ text: prompt }] }] }
-
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    })
-    return res.json()
+  // Helper to detect retryable errors mentioning tokens/quota/limits
+  function isRetryableErrorBody(bodyText, status) {
+    if (status === 429) return true
+    if (!bodyText) return false
+    const t = String(bodyText).toLowerCase()
+    return t.includes('rate limit') || t.includes('quota') || t.includes('insufficient_quota') || t.includes('exceeded') || t.includes('maximum context') || t.includes('max_tokens') || t.includes('token')
   }
 
-  // Default: OpenAI-compatible chat completions
-  const res = await fetch(GEMINI_ENDPOINT, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${GEMINI_KEY}`
-    },
-    body: JSON.stringify({ model, messages, max_tokens: 800 })
-  })
-  return res.json()
+  for (const m of models) {
+    try {
+      if (useGoogle) {
+        // Google Generative Language expects a different JSON shape. We'll post to
+        // models/{model}:generateContent with `contents: [{ parts: [{ text }] }]`.
+        const rawModel = m || process.env.GEMINI_MODEL || 'gemini-2.5-flash'
+        const modelName = rawModel.replace(/^models\//, '')
+        const url = `${process.env.GEMINI_API_ENDPOINT || `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent`}${process.env.GEMINI_API_KEY ? `?key=${process.env.GEMINI_API_KEY}` : ''}`
+
+        const prompt = messages.map(mm => (mm.content || '')).join('\n')
+        const body = { contents: [{ parts: [{ text: prompt }] }] }
+
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        })
+        const text = await res.text()
+        if (!res.ok && isRetryableErrorBody(text, res.status)) {
+          console.warn(`Model ${m} failed (Google) with retryable error, trying next model if available:`, text)
+          continue
+        }
+        try { return JSON.parse(text) } catch (e) { return text }
+      }
+
+      // OpenAI-compatible chat completions
+      const res = await fetch(GEMINI_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${GEMINI_KEY}`
+        },
+        body: JSON.stringify({ model: m, messages, max_tokens: 800 })
+      })
+
+      const text = await res.text()
+      let json = null
+      try { json = JSON.parse(text) } catch (e) { /* not json */ }
+
+      if (!res.ok && isRetryableErrorBody(text || (json && json.error && json.error.message), res.status)) {
+        console.warn(`Model ${m} failed with retryable error, trying next model if available:`, text || json)
+        continue
+      }
+
+      // return parsed json when possible, else raw text
+      return json || text
+    } catch (err) {
+      // network or other unexpected error — try next model
+      console.warn('callAI model attempt error, trying next model if available', m, err && err.message)
+      continue
+    }
+  }
+
+  // If all models failed, throw an error
+  throw new Error('All AI model attempts failed or returned retryable errors')
 }
 
 function extractAssistantText(aiResponse) {

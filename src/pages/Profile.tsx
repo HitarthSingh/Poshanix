@@ -455,6 +455,77 @@ function Profile() {
             )}
           </div>
 
+          {/* ---- Section: Medical Reports ---- */}
+          {form.medical_doc_url && (
+            <div className="profile-section">
+              <h2 className="section-title">
+                <span>📄</span> Medical Reports
+              </h2>
+              <p className="section-subtitle">Documents uploaded during onboarding</p>
+              
+              <div className="medical-reports-list">
+                <div className="medical-report-card">
+                  <div className="report-icon">
+                    {form.medical_doc_url.match(/\.(jpg|jpeg|png|webp)$/i) ? (
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                        <polyline points="21 15 16 10 5 21"/>
+                      </svg>
+                    ) : (
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                        <polyline points="10 9 9 9 8 9"/>
+                      </svg>
+                    )}
+                  </div>
+                  <div className="report-info">
+                    <span className="report-name">
+                      Medical Document
+                    </span>
+                    <span className="report-type">
+                      {form.medical_doc_url.match(/\.(pdf)$/i) ? 'PDF Document' : 
+                       form.medical_doc_url.match(/\.(jpg|jpeg)$/i) ? 'JPEG Image' :
+                       form.medical_doc_url.match(/\.(png)$/i) ? 'PNG Image' :
+                       form.medical_doc_url.match(/\.(webp)$/i) ? 'WebP Image' : 'Document'}
+                    </span>
+                  </div>
+                  <div className="report-actions">
+                    <a 
+                      href={form.medical_doc_url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="report-btn view-btn"
+                      title="View document"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                      </svg>
+                      View
+                    </a>
+                    <a 
+                      href={form.medical_doc_url} 
+                      download
+                      className="report-btn download-btn"
+                      title="Download document"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                      </svg>
+                      Download
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* ---- Section: Fitness ---- */}
           <div className="profile-section">
             <h2 className="section-title">
