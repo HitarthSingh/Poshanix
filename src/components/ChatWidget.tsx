@@ -76,9 +76,11 @@ export default function ChatWidget() {
         aiResponse = await res.text()
       } else {
         const data = await res.json()
-        
+         if (data?.response) {
+          aiResponse = data.response
+        }
         // Google Gemini format: candidates[0].content.parts[0].text
-        if (data?.candidates?.[0]?.content?.parts?.[0]?.text) {
+        else if (data?.candidates?.[0]?.content?.parts?.[0]?.text) {
           aiResponse = data.candidates[0].content.parts[0].text
         }
         // OpenAI format: choices[0].message.content

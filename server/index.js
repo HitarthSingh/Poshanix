@@ -57,8 +57,8 @@ Any violation of format or rules is considered a failure.`
 
 async function callAI(messages, model = 'gpt-3.5-turbo') {
   // If configured to use Google Generative Language (Gemini), call that API format
-  const useGoogle = GEMINI_API_TYPE === 'google' || GEMINI_ENDPOINT.includes('generativelanguage.googleapis.com')
-
+ const useGoogle = GEMINI_API_TYPE === 'google' || GEMINI_ENDPOINT.includes('generativelanguage.googleapis.com') || (GEMINI_KEY && GEMINI_KEY.startsWith('AIzaSy'))
+>
   if (useGoogle) {
     // Google Generative Language expects a different JSON shape. We'll post to
     // models/{model}:generateContent with `contents: [{ parts: [{ text }] }]`.
