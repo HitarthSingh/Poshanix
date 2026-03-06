@@ -572,6 +572,111 @@
   border-color: var(--border);
 }
 
+/* ---- Medical Reports Section ---- */
+.section-subtitle {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin: -0.5rem 0 1rem 0;
+}
+
+.medical-reports-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.medical-report-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.medical-report-card:hover {
+  border-color: rgba(74, 222, 128, 0.3);
+  box-shadow: 0 2px 12px rgba(74, 222, 128, 0.1);
+}
+
+.report-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: rgba(74, 222, 128, 0.1);
+  border-radius: 10px;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.report-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.report-name {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.report-type {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.report-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.report-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem 0.85rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.view-btn {
+  background: rgba(74, 222, 128, 0.1);
+  color: var(--accent);
+  border: 1px solid rgba(74, 222, 128, 0.2);
+}
+
+.view-btn:hover {
+  background: rgba(74, 222, 128, 0.18);
+  border-color: rgba(74, 222, 128, 0.35);
+}
+
+.download-btn {
+  background: var(--bg-surface);
+  color: var(--text-muted);
+  border: 1px solid var(--border-subtle);
+}
+
+.download-btn:hover {
+  background: var(--bg-card);
+  color: var(--text);
+  border-color: var(--border);
+}
+
 /* ---- Responsive ---- */
 @media (max-width: 560px) {
   .profile-container {
@@ -596,5 +701,23 @@
 
   .discard-btn, .save-btn {
     flex: 1 1 100%;
+  }
+
+  .medical-report-card {
+    flex-wrap: wrap;
+  }
+
+  .report-info {
+    flex: 1 1 calc(100% - 60px);
+  }
+
+  .report-actions {
+    flex: 1 1 100%;
+    margin-top: 0.5rem;
+  }
+
+  .report-btn {
+    flex: 1;
+    justify-content: center;
   }
 }
